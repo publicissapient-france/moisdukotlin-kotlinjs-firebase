@@ -1,0 +1,10 @@
+.idea
+**/node_modules/*
+**/.firebaserc
+*/npm-debug.log
+*~
+build
+.gradle
+functions/firebase-debug.log
+*.iml
+npm-debug.log
