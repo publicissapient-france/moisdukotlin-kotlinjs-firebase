@@ -510,7 +510,7 @@
   package$storage.BucketFileOptions = BucketFileOptions;
   package$storage.WriteStreamOptions = WriteStreamOptions;
   package$storage.FileMetaData = FileMetaData;
-  $$importsForInline$$.index = _;
+  $$importsForInline$$.index = '_';
   var package$todo = package$com.todo || (package$com.todo = {});
   package$todo.main_kand9s$ = main;
   package$todo.TaskInput = TaskInput;
