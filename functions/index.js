@@ -1,12 +1,218 @@
 (function (_, Kotlin, $module$express, $module$firebase_admin, $module$firebase_functions) {
   'use strict';
   var $$importsForInline$$ = _.$$importsForInline$$ || (_.$$importsForInline$$ = {});
-  var Kind_CLASS = Kotlin.Kind.CLASS;
-  var defineInlineFunction = Kotlin.defineInlineFunction;
   var equals = Kotlin.equals;
   var Unit = Kotlin.kotlin.Unit;
   var ensureNotNull = Kotlin.ensureNotNull;
   var throwCCE = Kotlin.throwCCE;
+  var Kind_CLASS = Kotlin.Kind.CLASS;
+  var defineInlineFunction = Kotlin.defineInlineFunction;
+  function findEvents(db) {
+    return db.collection('event').get();
+  }
+  function findEventById(db, eventId) {
+    return db.collection('event').doc(eventId).get();
+  }
+  function main$lambda(closure$db) {
+    return function (req, res) {
+      var params = req.params;
+      var eventId = params.id;
+      if (!equals(eventId, undefined))
+        getEventById(closure$db, eventId, res);
+      else
+        getAllEvents(closure$db, res);
+      return Unit;
+    };
+  }
+  function main$lambda$lambda(closure$res, closure$inputEvent) {
+    return function (ref) {
+      closure$res.status(201).json(new Event(ref.id, closure$inputEvent.label, closure$inputEvent.time));
+      return Unit;
+    };
+  }
+  function main$lambda$lambda_0(closure$res) {
+    return function (error) {
+      closure$res.status(500).json(error);
+      return Unit;
+    };
+  }
+  function main$lambda_0(closure$db) {
+    return function (req, res) {
+      var input = req.body;
+      var inputEvent = new Event(void 0, input.label, (new Date()).getTime());
+      closure$db.collection('event').add(JSON.parse(JSON.stringify(inputEvent))).then(main$lambda$lambda(res, inputEvent)).catch(main$lambda$lambda_0(res));
+      return Unit;
+    };
+  }
+  function main(args) {
+    var app = new $module$express();
+    $module$firebase_admin.initializeApp($module$firebase_functions.config().firebase);
+    var db = $module$firebase_admin.firestore();
+    var getEvents = main$lambda(db);
+    var createEvent = main$lambda_0(db);
+    app.get('/event/:id', getEvents);
+    app.put('/event', createEvent);
+    exports.v1 = $module$firebase_functions.https.onRequest(app);
+  }
+  var ArrayList_init = Kotlin.kotlin.collections.ArrayList_init_ww73n8$;
+  function getAllEvents$lambda(closure$res) {
+    return function (snapshot) {
+      var $receiver = snapshot.docs;
+      var destination = ArrayList_init($receiver.length);
+      var tmp$;
+      for (tmp$ = 0; tmp$ !== $receiver.length; ++tmp$) {
+        var item = $receiver[tmp$];
+        var tmp$_0, tmp$_1;
+        destination.add_11rb$(new Event(item.id, typeof (tmp$_0 = ensureNotNull(item.data())['label']) === 'string' ? tmp$_0 : throwCCE(), typeof (tmp$_1 = ensureNotNull(item.data())['time']) === 'number' ? tmp$_1 : throwCCE()));
+      }
+      var result = destination;
+      closure$res.status(200).json(result);
+      return Unit;
+    };
+  }
+  function getAllEvents$lambda_0(closure$res) {
+    return function (err) {
+      closure$res.status(500).json(err);
+      return Unit;
+    };
+  }
+  function getAllEvents(db, res) {
+    findEvents(db).then(getAllEvents$lambda(res)).catch(getAllEvents$lambda_0(res));
+  }
+  function getEventById$lambda(closure$res) {
+    return function (doc) {
+      if (!doc.exists)
+        closure$res.status(404).json(new Message('Event not found!'));
+      else {
+        var data = doc.data();
+        closure$res.status(200).json(new Event(doc.id, data.label, data.time));
+      }
+      return Unit;
+    };
+  }
+  function getEventById$lambda_0(closure$res) {
+    return function (err) {
+      closure$res.status(500).json(err);
+      return Unit;
+    };
+  }
+  function getEventById(db, eventId, res) {
+    findEventById(db, eventId).then(getEventById$lambda(res)).catch(getEventById$lambda_0(res));
+  }
+  function EventInput(label) {
+    this.label = label;
+  }
+  EventInput.$metadata$ = {
+    kind: Kind_CLASS,
+    simpleName: 'EventInput',
+    interfaces: []
+  };
+  EventInput.prototype.component1 = function () {
+    return this.label;
+  };
+  EventInput.prototype.copy_61zpoe$ = function (label) {
+    return new EventInput(label === void 0 ? this.label : label);
+  };
+  EventInput.prototype.toString = function () {
+    return 'EventInput(label=' + Kotlin.toString(this.label) + ')';
+  };
+  EventInput.prototype.hashCode = function () {
+    var result = 0;
+    result = result * 31 + Kotlin.hashCode(this.label) | 0;
+    return result;
+  };
+  EventInput.prototype.equals = function (other) {
+    return this === other || (other !== null && (typeof other === 'object' && (Object.getPrototypeOf(this) === Object.getPrototypeOf(other) && Kotlin.equals(this.label, other.label))));
+  };
+  function Event(id, label, time) {
+    if (id === void 0)
+      id = undefined;
+    this.id = id;
+    this.label = label;
+    this.time = time;
+  }
+  Event.$metadata$ = {
+    kind: Kind_CLASS,
+    simpleName: 'Event',
+    interfaces: []
+  };
+  Event.prototype.component1 = function () {
+    return this.id;
+  };
+  Event.prototype.component2 = function () {
+    return this.label;
+  };
+  Event.prototype.component3 = function () {
+    return this.time;
+  };
+  Event.prototype.copy_s10xjv$ = function (id, label, time) {
+    return new Event(id === void 0 ? this.id : id, label === void 0 ? this.label : label, time === void 0 ? this.time : time);
+  };
+  Event.prototype.toString = function () {
+    return 'Event(id=' + Kotlin.toString(this.id) + (', label=' + Kotlin.toString(this.label)) + (', time=' + Kotlin.toString(this.time)) + ')';
+  };
+  Event.prototype.hashCode = function () {
+    var result = 0;
+    result = result * 31 + Kotlin.hashCode(this.id) | 0;
+    result = result * 31 + Kotlin.hashCode(this.label) | 0;
+    result = result * 31 + Kotlin.hashCode(this.time) | 0;
+    return result;
+  };
+  Event.prototype.equals = function (other) {
+    return this === other || (other !== null && (typeof other === 'object' && (Object.getPrototypeOf(this) === Object.getPrototypeOf(other) && (Kotlin.equals(this.id, other.id) && Kotlin.equals(this.label, other.label) && Kotlin.equals(this.time, other.time)))));
+  };
+  function Params(id) {
+    if (id === void 0)
+      id = undefined;
+    this.id = id;
+  }
+  Params.$metadata$ = {
+    kind: Kind_CLASS,
+    simpleName: 'Params',
+    interfaces: []
+  };
+  Params.prototype.component1 = function () {
+    return this.id;
+  };
+  Params.prototype.copy_pdl1vj$ = function (id) {
+    return new Params(id === void 0 ? this.id : id);
+  };
+  Params.prototype.toString = function () {
+    return 'Params(id=' + Kotlin.toString(this.id) + ')';
+  };
+  Params.prototype.hashCode = function () {
+    var result = 0;
+    result = result * 31 + Kotlin.hashCode(this.id) | 0;
+    return result;
+  };
+  Params.prototype.equals = function (other) {
+    return this === other || (other !== null && (typeof other === 'object' && (Object.getPrototypeOf(this) === Object.getPrototypeOf(other) && Kotlin.equals(this.id, other.id))));
+  };
+  function Message(msg) {
+    this.msg = msg;
+  }
+  Message.$metadata$ = {
+    kind: Kind_CLASS,
+    simpleName: 'Message',
+    interfaces: []
+  };
+  Message.prototype.component1 = function () {
+    return this.msg;
+  };
+  Message.prototype.copy_61zpoe$ = function (msg) {
+    return new Message(msg === void 0 ? this.msg : msg);
+  };
+  Message.prototype.toString = function () {
+    return 'Message(msg=' + Kotlin.toString(this.msg) + ')';
+  };
+  Message.prototype.hashCode = function () {
+    var result = 0;
+    result = result * 31 + Kotlin.hashCode(this.msg) | 0;
+    return result;
+  };
+  Message.prototype.equals = function (other) {
+    return this === other || (other !== null && (typeof other === 'object' && (Object.getPrototypeOf(this) === Object.getPrototypeOf(other) && Kotlin.equals(this.msg, other.msg))));
+  };
   function Config(type, project_id, private_key_id, private_key, client_id, client_email, auth_uri, token_uri, auth_provider_x509_cert_url, client_x509_cert_url) {
     this.type = type;
     this.project_id = project_id;
@@ -289,215 +495,15 @@
   FileMetaData.prototype.equals = function (other) {
     return this === other || (other !== null && (typeof other === 'object' && (Object.getPrototypeOf(this) === Object.getPrototypeOf(other) && (Kotlin.equals(this.contentType, other.contentType) && Kotlin.equals(this.metadata, other.metadata) && Kotlin.equals(this.cacheControl, other.cacheControl)))));
   };
-  function main$lambda$lambda(closure$res) {
-    return function (doc) {
-      if (!doc.exists) {
-        closure$res.status(404).json(new Message('Task not found!'));
-      }
-       else {
-        var data = doc.data();
-        closure$res.status(200).json(new Task(doc.id, data.label, data.time));
-      }
-      return Unit;
-    };
-  }
-  function main$lambda$lambda_0(closure$res) {
-    return function (err) {
-      closure$res.status(500).json(err);
-      return Unit;
-    };
-  }
-  var ArrayList_init = Kotlin.kotlin.collections.ArrayList_init_ww73n8$;
-  function main$lambda$lambda_1(closure$res) {
-    return function (snapshot) {
-      var $receiver = snapshot.docs;
-      var destination = ArrayList_init($receiver.length);
-      var tmp$;
-      for (tmp$ = 0; tmp$ !== $receiver.length; ++tmp$) {
-        var item = $receiver[tmp$];
-        var tmp$_0, tmp$_1;
-        destination.add_11rb$(new Task(item.id, typeof (tmp$_0 = ensureNotNull(item.data())['label']) === 'string' ? tmp$_0 : throwCCE(), typeof (tmp$_1 = ensureNotNull(item.data())['time']) === 'number' ? tmp$_1 : throwCCE()));
-      }
-      var result = destination;
-      closure$res.status(200).json(result);
-      return Unit;
-    };
-  }
-  function main$lambda$lambda_2(closure$res) {
-    return function (err) {
-      closure$res.status(500).json(err);
-      return Unit;
-    };
-  }
-  function main$lambda(closure$db) {
-    return function (req, res) {
-      var params = req.params;
-      if (!equals(params.id, undefined)) {
-        closure$db.collection('task').doc(params.id).get().then(main$lambda$lambda(res)).catch(main$lambda$lambda_0(res));
-      }
-       else {
-        closure$db.collection('task').get().then(main$lambda$lambda_1(res)).catch(main$lambda$lambda_2(res));
-      }
-      return Unit;
-    };
-  }
-  function main$lambda$lambda_3(closure$res, closure$inputTask) {
-    return function (ref) {
-      closure$res.status(201).json(new Task(ref.id, closure$inputTask.label, closure$inputTask.time));
-      return Unit;
-    };
-  }
-  function main$lambda$lambda_4(closure$res) {
-    return function (error) {
-      closure$res.status(500).json(error);
-      return Unit;
-    };
-  }
-  function main$lambda_0(closure$db) {
-    return function (req, res) {
-      var input = req.body;
-      var inputTask = new Task(void 0, input.label, (new Date()).getTime());
-      closure$db.collection('task').add(JSON.parse(JSON.stringify(inputTask))).then(main$lambda$lambda_3(res, inputTask)).catch(main$lambda$lambda_4(res));
-      return Unit;
-    };
-  }
-  function main$lambda$lambda_5(closure$res) {
-    return function (it) {
-      closure$res.status(200).json(new Message('Task has been deleted'));
-      return Unit;
-    };
-  }
-  function main$lambda_1(closure$db) {
-    return function (req, res) {
-      var params = req.params;
-      closure$db.collection('task').doc(params.id).delete().then(main$lambda$lambda_5(res));
-      return Unit;
-    };
-  }
-  function main(args) {
-    var app = new $module$express();
-    $module$firebase_admin.initializeApp($module$firebase_functions.config().firebase);
-    var db = $module$firebase_admin.firestore();
-    app.get('/task/:id?', main$lambda(db));
-    app.put('/task', main$lambda_0(db));
-    app.delete('/task/:id', main$lambda_1(db));
-    exports.v1 = $module$firebase_functions.https.onRequest(app);
-  }
-  function TaskInput(label) {
-    this.label = label;
-  }
-  TaskInput.$metadata$ = {
-    kind: Kind_CLASS,
-    simpleName: 'TaskInput',
-    interfaces: []
-  };
-  TaskInput.prototype.component1 = function () {
-    return this.label;
-  };
-  TaskInput.prototype.copy_61zpoe$ = function (label) {
-    return new TaskInput(label === void 0 ? this.label : label);
-  };
-  TaskInput.prototype.toString = function () {
-    return 'TaskInput(label=' + Kotlin.toString(this.label) + ')';
-  };
-  TaskInput.prototype.hashCode = function () {
-    var result = 0;
-    result = result * 31 + Kotlin.hashCode(this.label) | 0;
-    return result;
-  };
-  TaskInput.prototype.equals = function (other) {
-    return this === other || (other !== null && (typeof other === 'object' && (Object.getPrototypeOf(this) === Object.getPrototypeOf(other) && Kotlin.equals(this.label, other.label))));
-  };
-  function Task(id, label, time) {
-    if (id === void 0)
-      id = undefined;
-    this.id = id;
-    this.label = label;
-    this.time = time;
-  }
-  Task.$metadata$ = {
-    kind: Kind_CLASS,
-    simpleName: 'Task',
-    interfaces: []
-  };
-  Task.prototype.component1 = function () {
-    return this.id;
-  };
-  Task.prototype.component2 = function () {
-    return this.label;
-  };
-  Task.prototype.component3 = function () {
-    return this.time;
-  };
-  Task.prototype.copy_s10xjv$ = function (id, label, time) {
-    return new Task(id === void 0 ? this.id : id, label === void 0 ? this.label : label, time === void 0 ? this.time : time);
-  };
-  Task.prototype.toString = function () {
-    return 'Task(id=' + Kotlin.toString(this.id) + (', label=' + Kotlin.toString(this.label)) + (', time=' + Kotlin.toString(this.time)) + ')';
-  };
-  Task.prototype.hashCode = function () {
-    var result = 0;
-    result = result * 31 + Kotlin.hashCode(this.id) | 0;
-    result = result * 31 + Kotlin.hashCode(this.label) | 0;
-    result = result * 31 + Kotlin.hashCode(this.time) | 0;
-    return result;
-  };
-  Task.prototype.equals = function (other) {
-    return this === other || (other !== null && (typeof other === 'object' && (Object.getPrototypeOf(this) === Object.getPrototypeOf(other) && (Kotlin.equals(this.id, other.id) && Kotlin.equals(this.label, other.label) && Kotlin.equals(this.time, other.time)))));
-  };
-  function Params(id) {
-    if (id === void 0)
-      id = undefined;
-    this.id = id;
-  }
-  Params.$metadata$ = {
-    kind: Kind_CLASS,
-    simpleName: 'Params',
-    interfaces: []
-  };
-  Params.prototype.component1 = function () {
-    return this.id;
-  };
-  Params.prototype.copy_pdl1vj$ = function (id) {
-    return new Params(id === void 0 ? this.id : id);
-  };
-  Params.prototype.toString = function () {
-    return 'Params(id=' + Kotlin.toString(this.id) + ')';
-  };
-  Params.prototype.hashCode = function () {
-    var result = 0;
-    result = result * 31 + Kotlin.hashCode(this.id) | 0;
-    return result;
-  };
-  Params.prototype.equals = function (other) {
-    return this === other || (other !== null && (typeof other === 'object' && (Object.getPrototypeOf(this) === Object.getPrototypeOf(other) && Kotlin.equals(this.id, other.id))));
-  };
-  function Message(msg) {
-    this.msg = msg;
-  }
-  Message.$metadata$ = {
-    kind: Kind_CLASS,
-    simpleName: 'Message',
-    interfaces: []
-  };
-  Message.prototype.component1 = function () {
-    return this.msg;
-  };
-  Message.prototype.copy_61zpoe$ = function (msg) {
-    return new Message(msg === void 0 ? this.msg : msg);
-  };
-  Message.prototype.toString = function () {
-    return 'Message(msg=' + Kotlin.toString(this.msg) + ')';
-  };
-  Message.prototype.hashCode = function () {
-    var result = 0;
-    result = result * 31 + Kotlin.hashCode(this.msg) | 0;
-    return result;
-  };
-  Message.prototype.equals = function (other) {
-    return this === other || (other !== null && (typeof other === 'object' && (Object.getPrototypeOf(this) === Object.getPrototypeOf(other) && Kotlin.equals(this.msg, other.msg))));
-  };
   var package$com = _.com || (_.com = {});
+  var package$api = package$com.api || (package$com.api = {});
+  var package$event = package$api.event || (package$api.event = {});
+  package$event.main_kand9s$ = main;
+  $$importsForInline$$.index = _;
+  package$event.EventInput = EventInput;
+  package$event.Event = Event;
+  package$event.Params = Params;
+  package$event.Message = Message;
   var package$firebase = package$com.firebase || (package$com.firebase = {});
   var package$wrappers = package$firebase.wrappers || (package$firebase.wrappers = {});
   var package$admin = package$wrappers.admin || (package$wrappers.admin = {});
@@ -510,13 +516,6 @@
   package$storage.BucketFileOptions = BucketFileOptions;
   package$storage.WriteStreamOptions = WriteStreamOptions;
   package$storage.FileMetaData = FileMetaData;
-  $$importsForInline$$.index = _;
-  var package$todo = package$com.todo || (package$com.todo = {});
-  package$todo.main_kand9s$ = main;
-  package$todo.TaskInput = TaskInput;
-  package$todo.Task = Task;
-  package$todo.Params = Params;
-  package$todo.Message = Message;
   main([]);
   Kotlin.defineModule('index', _);
   return _;

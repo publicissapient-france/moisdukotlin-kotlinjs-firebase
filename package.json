@@ -6,7 +6,10 @@
     "shell": "firebase functions:shell",
     "start": "npm run shell",
     "deploy": "firebase deploy --only functions",
-    "logs": "firebase functions:log"
+    "logs": "firebase functions:log",
+    "cli:event:create": "curl -X PUT https://us-central1-kotlinjs-function.cloudfunctions.net/v1/event -H 'Content-Type: application/x-www-form-urlencoded' -d 'label=xebicon'",
+    "cli:event:list": "curl https://us-central1-kotlinjs-function.cloudfunctions.net/v1/event --silent | jq",
+    "delete-invalid-line": "sed -i '/importsForInline/d' ./functions/index.js"
   },
   "dependencies": {
     "express": "^4.16.3",
@@ -14,5 +17,8 @@
     "firebase-functions": "^2.0.5",
     "kotlin": "^1.2.71"
   },
-  "private": true
+  "private": true,
+  "devDependencies": {
+    "npm-check": "^5.9.0"
+  }
 }
