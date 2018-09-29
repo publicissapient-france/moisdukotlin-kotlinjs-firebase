@@ -97,7 +97,7 @@
     var db = $module$firebase_admin.firestore();
     var getEvents = main$lambda(db);
     var createEvent = main$lambda_0(db);
-    app.get('/event/:id', getEvents);
+    app.get('/event/:id?', getEvents);
     app.put('/event', createEvent);
     exports.v1 = $module$firebase_functions.https.onRequest(app);
   }

@@ -55,10 +55,8 @@ fun main(args: Array<String>) {
     val getEvents: (Request, Response) -> Unit = { req, res ->
         val params = req.params.unsafeCast<Params>()
         val eventId = params.id
-        when {
-            eventId != undefined -> getEventById(db, eventId, res)
-            else -> getAllEvents(db, res)
-        }
+        if (eventId != undefined) getEventById(db, eventId, res)
+        else getAllEvents(db, res)
     }
 
     val createEvent: (Request, Response) -> Unit = { req, res ->
@@ -69,7 +67,7 @@ fun main(args: Array<String>) {
                 .catch({ error -> res.status(500).json(error) })
     }
 
-    app.get("/event/:id", getEvents)
+    app.get("/event/:id?", getEvents)
     app.put("/event", createEvent)
 
     exports.v1 = Functions.https.onRequest(app)
