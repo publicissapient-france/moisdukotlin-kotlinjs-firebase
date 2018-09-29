@@ -1,10 +1,9 @@
 (function (_, Kotlin, $module$express, $module$firebase_admin, $module$firebase_functions) {
   'use strict';
-  var $$importsForInline$$ = _.$$importsForInline$$ || (_.$$importsForInline$$ = {});
-  var equals = Kotlin.equals;
-  var Unit = Kotlin.kotlin.Unit;
   var ensureNotNull = Kotlin.ensureNotNull;
   var throwCCE = Kotlin.throwCCE;
+  var Unit = Kotlin.kotlin.Unit;
+  var equals = Kotlin.equals;
   var Kind_CLASS = Kotlin.Kind.CLASS;
   var defineInlineFunction = Kotlin.defineInlineFunction;
   function findEvents(db) {
@@ -13,46 +12,8 @@
   function findEventById(db, eventId) {
     return db.collection('event').doc(eventId).get();
   }
-  function main$lambda(closure$db) {
-    return function (req, res) {
-      var params = req.params;
-      var eventId = params.id;
-      if (!equals(eventId, undefined))
-        getEventById(closure$db, eventId, res);
-      else
-        getAllEvents(closure$db, res);
-      return Unit;
-    };
-  }
-  function main$lambda$lambda(closure$res, closure$inputEvent) {
-    return function (ref) {
-      closure$res.status(201).json(new Event(ref.id, closure$inputEvent.label, closure$inputEvent.time));
-      return Unit;
-    };
-  }
-  function main$lambda$lambda_0(closure$res) {
-    return function (error) {
-      closure$res.status(500).json(error);
-      return Unit;
-    };
-  }
-  function main$lambda_0(closure$db) {
-    return function (req, res) {
-      var input = req.body;
-      var inputEvent = new Event(void 0, input.label, (new Date()).getTime());
-      closure$db.collection('event').add(JSON.parse(JSON.stringify(inputEvent))).then(main$lambda$lambda(res, inputEvent)).catch(main$lambda$lambda_0(res));
-      return Unit;
-    };
-  }
-  function main(args) {
-    var app = new $module$express();
-    $module$firebase_admin.initializeApp($module$firebase_functions.config().firebase);
-    var db = $module$firebase_admin.firestore();
-    var getEvents = main$lambda(db);
-    var createEvent = main$lambda_0(db);
-    app.get('/event/:id', getEvents);
-    app.put('/event', createEvent);
-    exports.v1 = $module$firebase_functions.https.onRequest(app);
+  function saveEvent(db, inputEvent) {
+    return db.collection('event').add(JSON.parse(JSON.stringify(inputEvent)));
   }
   var ArrayList_init = Kotlin.kotlin.collections.ArrayList_init_ww73n8$;
   function getAllEvents$lambda(closure$res) {
@@ -98,6 +59,47 @@
   }
   function getEventById(db, eventId, res) {
     findEventById(db, eventId).then(getEventById$lambda(res)).catch(getEventById$lambda_0(res));
+  }
+  function main$lambda(closure$db) {
+    return function (req, res) {
+      var params = req.params;
+      var eventId = params.id;
+      if (!equals(eventId, undefined))
+        getEventById(closure$db, eventId, res);
+      else
+        getAllEvents(closure$db, res);
+      return Unit;
+    };
+  }
+  function main$lambda$lambda(closure$res, closure$inputEvent) {
+    return function (ref) {
+      closure$res.status(201).json(new Event(ref.id, closure$inputEvent.label, closure$inputEvent.time));
+      return Unit;
+    };
+  }
+  function main$lambda$lambda_0(closure$res) {
+    return function (error) {
+      closure$res.status(500).json(error);
+      return Unit;
+    };
+  }
+  function main$lambda_0(closure$db) {
+    return function (req, res) {
+      var input = req.body;
+      var inputEvent = new Event(void 0, input.label, (new Date()).getTime());
+      saveEvent(closure$db, inputEvent).then(main$lambda$lambda(res, inputEvent)).catch(main$lambda$lambda_0(res));
+      return Unit;
+    };
+  }
+  function main(args) {
+    var app = new $module$express();
+    $module$firebase_admin.initializeApp($module$firebase_functions.config().firebase);
+    var db = $module$firebase_admin.firestore();
+    var getEvents = main$lambda(db);
+    var createEvent = main$lambda_0(db);
+    app.get('/event/:id', getEvents);
+    app.put('/event', createEvent);
+    exports.v1 = $module$firebase_functions.https.onRequest(app);
   }
   function EventInput(label) {
     this.label = label;
@@ -499,7 +501,6 @@
   var package$api = package$com.api || (package$com.api = {});
   var package$event = package$api.event || (package$api.event = {});
   package$event.main_kand9s$ = main;
-  $$importsForInline$$.index = _;
   package$event.EventInput = EventInput;
   package$event.Event = Event;
   package$event.Params = Params;
