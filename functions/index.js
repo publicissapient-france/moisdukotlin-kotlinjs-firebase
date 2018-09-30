@@ -1,4 +1,4 @@
-(function (_, Kotlin, $module$express, $module$firebase_admin, $module$firebase_functions) {
+(function (_, Kotlin, $module$express, $module$cors, $module$firebase_admin, $module$firebase_functions) {
   'use strict';
   var ensureNotNull = Kotlin.ensureNotNull;
   var throwCCE = Kotlin.throwCCE;
@@ -93,6 +93,7 @@
   }
   function main(args) {
     var app = new $module$express();
+    app.use(new $module$cors());
     $module$firebase_admin.initializeApp($module$firebase_functions.config().firebase);
     var db = $module$firebase_admin.firestore();
     var getEvents = main$lambda(db);
@@ -520,6 +521,6 @@
   main([]);
   Kotlin.defineModule('index', _);
   return _;
-}(module.exports, require('kotlin'), require('express'), require('firebase-admin'), require('firebase-functions')));
+}(module.exports, require('kotlin'), require('express'), require('cors'), require('firebase-admin'), require('firebase-functions')));
 
 //# sourceMappingURL=index.js.map

@@ -1,5 +1,6 @@
 package com.api.event
 
+import com.expressjs.wrapper.Cors
 import com.expressjs.wrapper.Express
 import com.expressjs.wrapper.Request
 import com.expressjs.wrapper.Response
@@ -49,6 +50,8 @@ private fun getEventById(db: Firestore, eventId: String?, res: Response) {
 fun main(args: Array<String>) {
 
     val app = Express()
+    app.use(Cors())
+
     Admin.initializeApp(Functions.config().firebase)
     val db = Admin.firestore()
 
