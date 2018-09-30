@@ -23,8 +23,8 @@
       var tmp$;
       for (tmp$ = 0; tmp$ !== $receiver.length; ++tmp$) {
         var item = $receiver[tmp$];
-        var tmp$_0, tmp$_1;
-        destination.add_11rb$(new Event(item.id, typeof (tmp$_0 = ensureNotNull(item.data())['label']) === 'string' ? tmp$_0 : throwCCE(), typeof (tmp$_1 = ensureNotNull(item.data())['time']) === 'number' ? tmp$_1 : throwCCE()));
+        var tmp$_0, tmp$_1, tmp$_2, tmp$_3;
+        destination.add_11rb$(new Event(item.id, typeof (tmp$_0 = ensureNotNull(item.data())['label']) === 'string' ? tmp$_0 : throwCCE(), typeof (tmp$_1 = ensureNotNull(item.data())['time']) === 'number' ? tmp$_1 : throwCCE(), typeof (tmp$_2 = ensureNotNull(item.data())['date']) === 'string' ? tmp$_2 : throwCCE(), typeof (tmp$_3 = ensureNotNull(item.data())['image']) === 'string' ? tmp$_3 : throwCCE()));
       }
       var result = destination;
       closure$res.status(200).json(result);
@@ -46,7 +46,7 @@
         closure$res.status(404).json(new Message('Event not found!'));
       else {
         var data = doc.data();
-        closure$res.status(200).json(new Event(doc.id, data.label, data.time));
+        closure$res.status(200).json(new Event(doc.id, data.label, data.time, data.date, data.image));
       }
       return Unit;
     };
@@ -73,7 +73,7 @@
   }
   function main$lambda$lambda(closure$res, closure$inputEvent) {
     return function (ref) {
-      closure$res.status(201).json(new Event(ref.id, closure$inputEvent.label, closure$inputEvent.time));
+      closure$res.status(201).json(new Event(ref.id, closure$inputEvent.label, closure$inputEvent.time, closure$inputEvent.date, closure$inputEvent.image));
       return Unit;
     };
   }
@@ -86,7 +86,7 @@
   function main$lambda_0(closure$db) {
     return function (req, res) {
       var input = req.body;
-      var inputEvent = new Event(void 0, input.label, (new Date()).getTime());
+      var inputEvent = new Event(void 0, input.label, (new Date()).getTime(), input.date, input.image);
       saveEvent(closure$db, inputEvent).then(main$lambda$lambda(res, inputEvent)).catch(main$lambda$lambda_0(res));
       return Unit;
     };
@@ -102,8 +102,10 @@
     app.put('/event', createEvent);
     exports.v1 = $module$firebase_functions.https.onRequest(app);
   }
-  function EventInput(label) {
+  function EventInput(label, date, image) {
     this.label = label;
+    this.date = date;
+    this.image = image;
   }
   EventInput.$metadata$ = {
     kind: Kind_CLASS,
@@ -113,26 +115,36 @@
   EventInput.prototype.component1 = function () {
     return this.label;
   };
-  EventInput.prototype.copy_61zpoe$ = function (label) {
-    return new EventInput(label === void 0 ? this.label : label);
+  EventInput.prototype.component2 = function () {
+    return this.date;
+  };
+  EventInput.prototype.component3 = function () {
+    return this.image;
+  };
+  EventInput.prototype.copy_6hosri$ = function (label, date, image) {
+    return new EventInput(label === void 0 ? this.label : label, date === void 0 ? this.date : date, image === void 0 ? this.image : image);
   };
   EventInput.prototype.toString = function () {
-    return 'EventInput(label=' + Kotlin.toString(this.label) + ')';
+    return 'EventInput(label=' + Kotlin.toString(this.label) + (', date=' + Kotlin.toString(this.date)) + (', image=' + Kotlin.toString(this.image)) + ')';
   };
   EventInput.prototype.hashCode = function () {
     var result = 0;
     result = result * 31 + Kotlin.hashCode(this.label) | 0;
+    result = result * 31 + Kotlin.hashCode(this.date) | 0;
+    result = result * 31 + Kotlin.hashCode(this.image) | 0;
     return result;
   };
   EventInput.prototype.equals = function (other) {
-    return this === other || (other !== null && (typeof other === 'object' && (Object.getPrototypeOf(this) === Object.getPrototypeOf(other) && Kotlin.equals(this.label, other.label))));
+    return this === other || (other !== null && (typeof other === 'object' && (Object.getPrototypeOf(this) === Object.getPrototypeOf(other) && (Kotlin.equals(this.label, other.label) && Kotlin.equals(this.date, other.date) && Kotlin.equals(this.image, other.image)))));
   };
-  function Event(id, label, time) {
+  function Event(id, label, time, date, image) {
     if (id === void 0)
       id = undefined;
     this.id = id;
     this.label = label;
     this.time = time;
+    this.date = date;
+    this.image = image;
   }
   Event.$metadata$ = {
     kind: Kind_CLASS,
@@ -148,21 +160,29 @@
   Event.prototype.component3 = function () {
     return this.time;
   };
-  Event.prototype.copy_s10xjv$ = function (id, label, time) {
-    return new Event(id === void 0 ? this.id : id, label === void 0 ? this.label : label, time === void 0 ? this.time : time);
+  Event.prototype.component4 = function () {
+    return this.date;
+  };
+  Event.prototype.component5 = function () {
+    return this.image;
+  };
+  Event.prototype.copy_au0urb$ = function (id, label, time, date, image) {
+    return new Event(id === void 0 ? this.id : id, label === void 0 ? this.label : label, time === void 0 ? this.time : time, date === void 0 ? this.date : date, image === void 0 ? this.image : image);
   };
   Event.prototype.toString = function () {
-    return 'Event(id=' + Kotlin.toString(this.id) + (', label=' + Kotlin.toString(this.label)) + (', time=' + Kotlin.toString(this.time)) + ')';
+    return 'Event(id=' + Kotlin.toString(this.id) + (', label=' + Kotlin.toString(this.label)) + (', time=' + Kotlin.toString(this.time)) + (', date=' + Kotlin.toString(this.date)) + (', image=' + Kotlin.toString(this.image)) + ')';
   };
   Event.prototype.hashCode = function () {
     var result = 0;
     result = result * 31 + Kotlin.hashCode(this.id) | 0;
     result = result * 31 + Kotlin.hashCode(this.label) | 0;
     result = result * 31 + Kotlin.hashCode(this.time) | 0;
+    result = result * 31 + Kotlin.hashCode(this.date) | 0;
+    result = result * 31 + Kotlin.hashCode(this.image) | 0;
     return result;
   };
   Event.prototype.equals = function (other) {
-    return this === other || (other !== null && (typeof other === 'object' && (Object.getPrototypeOf(this) === Object.getPrototypeOf(other) && (Kotlin.equals(this.id, other.id) && Kotlin.equals(this.label, other.label) && Kotlin.equals(this.time, other.time)))));
+    return this === other || (other !== null && (typeof other === 'object' && (Object.getPrototypeOf(this) === Object.getPrototypeOf(other) && (Kotlin.equals(this.id, other.id) && Kotlin.equals(this.label, other.label) && Kotlin.equals(this.time, other.time) && Kotlin.equals(this.date, other.date) && Kotlin.equals(this.image, other.image)))));
   };
   function Params(id) {
     if (id === void 0)

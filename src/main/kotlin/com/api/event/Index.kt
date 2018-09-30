@@ -27,7 +27,7 @@ private fun getAllEvents(db: Firestore, res: Response) {
     findEvents(db)
             .then({ snapshot ->
                 val result = snapshot.docs.map {
-                    Event(it.id, it.data()!!["label"] as String, it.data()!!["time"] as Double)
+                    Event(it.id, it.data()!!["label"] as String, it.data()!!["time"] as Double, it.data()!!["date"] as String, it.data()!!["image"] as String)
                 }
                 res.status(200).json(result)
             }).catch({ err -> res.status(500).json(err) })
@@ -40,7 +40,7 @@ private fun getEventById(db: Firestore, eventId: String?, res: Response) {
                     !doc.exists -> res.status(404).json(Message("Event not found!"))
                     else -> {
                         val data = doc.data().unsafeCast<Event>()
-                        res.status(200).json(Event(doc.id, data.label, data.time))
+                        res.status(200).json(Event(doc.id, data.label, data.time, data.date, data.image))
                     }
                 }
             }).catch({ err -> res.status(500).json(err) })
@@ -64,9 +64,9 @@ fun main(args: Array<String>) {
 
     val createEvent: (Request, Response) -> Unit = { req, res ->
         val input = req.body.unsafeCast<EventInput>()
-        val inputEvent = Event(label = input.label, time = Date().getTime())
+        val inputEvent = Event(label = input.label, time = Date().getTime(), date = input.date, image = input.image)
         saveEvent(db, inputEvent)
-                .then({ ref -> res.status(201).json(Event(ref.id, inputEvent.label, inputEvent.time)) })
+                .then({ ref -> res.status(201).json(Event(ref.id, inputEvent.label, inputEvent.time, inputEvent.date, inputEvent.image)) })
                 .catch({ error -> res.status(500).json(error) })
     }
 
@@ -76,7 +76,7 @@ fun main(args: Array<String>) {
     exports.v1 = Functions.https.onRequest(app)
 }
 
-data class EventInput(val label: String)
-data class Event(val id: String? = undefined, val label: String, val time: Double) : DocumentData
+data class EventInput(val label: String, val date: String, val image: String)
+data class Event(val id: String? = undefined, val label: String, val time: Double, val date: String, val image: String) : DocumentData
 data class Params(val id: String? = undefined)
 data class Message(val msg: String)
